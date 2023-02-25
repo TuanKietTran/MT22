@@ -18,7 +18,9 @@ options{
 
 /*Basic concepts*/
 
-compilationUnit: translationUnit EOF ;
+program
+    :   translationUnit EOF
+    ;
 
 /* Declaration */
 
@@ -29,11 +31,15 @@ translationUnit
 
 externalDeclaration
     :   functionDeclaration
-    |   declaration
+    |   variableDeclaration
     ;
 
-declaration
+variableDeclaration
     :   (shortDeclaration | fullDeclaration) Semi
+    ;
+
+shortDeclaration
+    :   identifierList Colon typeSpecifier
     ;
 
 identifierList
@@ -41,19 +47,25 @@ identifierList
     |   Identifier
     ;
 
-shortDeclaration
-    :   identifierList Colon typeSpecifier
-    ;
-
 
 fullDeclaration
-    :   Identifier Comma fullDeclaration Comma expression
-    |   Identifier Colon typeSpecifier Assign expression
+    :   Identifier Comma fullDeclaration Comma initializer
+    |   Identifier Colon typeSpecifier Assign initializer
+    ;
+
+initializer
+    :   assignmentExpression
+    |   LeftBrace initializerList RightBrace
+    ;
+
+initializerList
+    :   initializer Comma initializerList
+    |   initializer
     ;
 
 
 functionDeclaration
-    :   Identifier Colon Function typeSpecifier paramDeclarator inheritance compoundStatement
+    :   Identifier Colon Function typeSpecifier paramDeclarator inheritance blockStatement
     ;
 
 paramDeclarator
@@ -76,8 +88,9 @@ parameter
 
 typeSpecifier
     :   atomicType
-    |   voidType
+    |   Void
     |   arrayType
+    |   Auto
     ;
 
 atomicType
@@ -87,30 +100,21 @@ atomicType
     |   String
     ;
 
-voidType
-    :   Void
-    ;
-
 arrayType
-    :   Array LeftBracket dimension RightBracket Of atomicType
-    ;
-
-dimension
-    :   IntegerLiteral Comma dimension
-    |   IntegerLiteral
+    :   Array LeftBracket IntegerLiteral (Comma IntegerLiteral)* RightBracket Of atomicType
     ;
 
 /* Statements */
 
 statement
-    :   compoundStatement
+    :   blockStatement
     |   expressionStatement
     |   selectionStatement
     |   iterationStatement
     |   jumpStatement
     ;
 
-compoundStatement
+blockStatement
     :   LeftBrace (blockItemList |) RightBrace
     ;
 
@@ -121,11 +125,11 @@ blockItemList
 
 blockItem
     :   statement
-    |   declaration
+    |   variableDeclaration
     ;
 
 expressionStatement
-    :   expression Semi
+    :   (expression |) Semi
     ;
 
 selectionStatement
@@ -139,18 +143,18 @@ iterationStatement
     ;
 
 //    |   'for' LeftParen expression? ';' expression?  ';' forUpdate? RightParen statement
-//    |   For LeftParen declaration  expression? ';' expression? RightParen statement
+//    |   For LeftParen variableDeclaration  expression? ';' expression? RightParen statement
 
 forCondition
-	:   forDeclaration Colon conditionExpression Colon updateExpression
+	:   forDeclaration Comma conditionExpression Comma updateExpression
 	;
 
 forDeclaration
-    : Identifier Equal expression
+    : Identifier Assign expression
     ;
 
 conditionExpression
-    :   assignmentExpression (',' assignmentExpression)*
+    :   relationalExpression
     ;
 
 updateExpression
@@ -181,7 +185,7 @@ stringExpression
     ;
 
 relationalExpression
-    :   logicalExpression (Less|Greater|LessEqual|GreaterEqual |Equal| NotEqual) logicalExpression
+    :   logicalExpression (Less|Greater|LessEqual|GreaterEqual|Equal|NotEqual) logicalExpression
     |   logicalExpression
     ;
 
@@ -200,32 +204,31 @@ multiplicativeExpression
     |   unaryExpression
     ;
 
-
-
 unaryExpression
-    :   postfixExpression
-    |   unaryOperator Identifier
+    :   Not unaryExpression
+    |   signExpression
     ;
 
-unaryOperator
-    :   Minus
-    |   Not
-    ;
-
-primaryExpression
-    :   Identifier
-    |   literal
-    |   LeftParen expression RightParen
+signExpression
+    :   Minus signExpression
+    |   postfixExpression
     ;
 
 postfixExpression
     :   primaryExpression
 	|   postfixExpression LeftBracket expression RightBracket
-	|   postfixExpression LeftParen (expression| ) RightParen
 	;
 
+primaryExpression
+    :   literal
+    |   Identifier
+    |   LeftParen expression RightParen
+    |   functionCall
+    ;
 
-
+functionCall
+    :   Identifier LeftParen (expression| ) RightParen
+    ;
 
 literal
     :   IntegerLiteral
@@ -236,13 +239,29 @@ literal
 
 /*--TOKENS--*/
 
+/* Literal */
+
+IntegerLiteral
+    :   Digitsequence {self.text = self.text.replace("_", "")}
+    ;
+
+FloatingLiteral
+    :   (Digitsequence DecimalPart ExponentPart?
+	|   Digitsequence DecimalPart? ExponentPart
+	|   Digitsequence? DecimalPart ExponentPart) {self.text = self.text.replace("_", "")}
+	;
+
+BooleanLiteral: False_ | True_;
+
+StringLiteral: '"' StringCharacter* '"' {self.text = self.text[1:-1]};
+
 /*Keywords*/
 
 Array: 'array';
 
 Auto: 'auto';
 
-Bool: 'bool';
+Bool: 'boolean';
 
 Break: 'break';
 
@@ -335,27 +354,15 @@ Greater: '>';
 
 Doublecolon: '::';
 
-/* Literal */
 
-IntegerLiteral
-    :   Digitsequence
-    ;
-
-FloatingLiteral
-    :   Digitsequence DecimalPart ExponentPart?
-	|   Digitsequence DecimalPart? ExponentPart
-	|   Digitsequence? DecimalPart ExponentPart
-	;
-
-BooleanLiteral: False_ | True_;
-
-StringLiteral: '"' StringCharacter* '"' {self.text = self.text[1:-1]};
 
 /*  */
 
 Identifier
     :   [a-zA-Z_][a-zA-Z_0-9]*
     ;
+
+
 
 fragment DIGIT: [0-9];
 
@@ -364,7 +371,7 @@ fragment NONZERODIGIT: [1-9];
 fragment SIGN: [+-];
 
 fragment Digitsequence
-    :   '0' | NONZERODIGIT ('_'? DIGIT)*  {self.text = self.text.replace("_", "")}
+    :   '0' | NONZERODIGIT ('_'? DIGIT)*
     ;
 
 fragment DecimalPart

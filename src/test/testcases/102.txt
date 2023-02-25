@@ -1,1 +1,1 @@
-0ca
+main: function void () {}

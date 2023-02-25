@@ -1,1 +1,1 @@
-0,ca,<EOF>
+main,:,function,void,(,),{,},<EOF>

@@ -4,12 +4,24 @@ from TestUtils import TestLexer
 
 class LexerSuite(unittest.TestCase):
 
-    def test_lowercase_identifier(self):
+    def test_identifier(self):
         """test identifiers"""
-        self.assertTrue(TestLexer.test("abc", "abc,<EOF>", 101))
+        self.assertTrue(TestLexer.test("x abc FEEL free4all ", "abc x,,<EOF>", 101))
 
-    def test_error_number_at_head(self):
-        """test identifiers"""
-        self.assertTrue(TestLexer.test("0ca", "Error Token 0", 102))
+    def test_ac(self):
+        """"""
+        input = """main: function void () {}"""
+        expect = """"""
+        self.assertTrue(TestLexer.test(input, expect, 102))
 
+    def test_tgh(self):
+        """"""
+        input = """str:string="Hello World!"""
+        expect = """"""
+        self.assertTrue(TestLexer.test(input, expect, 103))
 
+    def test_t1(self):
+        """"""
+        input = """str:string="Hello \\nWorld!";"""
+        expect = """"""
+        self.assertTrue(TestLexer.test(input, expect, 104))
