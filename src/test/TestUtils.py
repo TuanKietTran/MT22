@@ -43,7 +43,7 @@ class TestLexer:
         lexer = Lexer(inputfile)
         try:
             TestLexer.printLexeme(dest, lexer)
-        except (ErrorToken, UncloseString, IllegalEscape) as err:
+        except (ErrorToken, UncloseString, IllegalEscape, UnterminatedComment) as err:
             dest.write(err.message)
         finally:
             dest.close()
