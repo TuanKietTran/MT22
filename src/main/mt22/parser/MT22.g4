@@ -1,11 +1,4 @@
-/*
-    Ho Chi Minh City University of Technology - HCMUT
-    Principle of programming language - CO3005
-    Tran Ha Tuan Kiet - 2011493
-    Feb 10, 2023
-    MT22 Specification
-*/
-
+//2011493
 grammar MT22;
 
 @lexer::header {
@@ -19,7 +12,7 @@ options{
 /*Basic concepts*/
 
 program
-    :   translationUnit EOF
+    :   (translationUnit |) EOF
     ;
 
 /* Declaration */
@@ -101,7 +94,7 @@ atomicType
     ;
 
 arrayType
-    :   Array LeftBracket IntegerLiteral (Comma IntegerLiteral)* RightBracket Of atomicType
+    :   Array LeftBracket (IntegerLiteral (Comma IntegerLiteral)*)? RightBracket Of atomicType
     ;
 
 /* Statements */
@@ -246,9 +239,12 @@ IntegerLiteral
     ;
 
 FloatingLiteral
-    :   (Digitsequence DecimalPart ExponentPart?
-	|   Digitsequence DecimalPart? ExponentPart
-	|   Digitsequence? DecimalPart ExponentPart) {self.text = self.text.replace("_", "")}
+    :
+    (   Digitsequence DecimalPart
+	|   Digitsequence  ExponentPart
+	|   DecimalPart ExponentPart
+	|   Digitsequence DecimalPart ExponentPart
+	)   {self.text = self.text.replace("_", "")}
 	;
 
 BooleanLiteral: False_ | True_;
@@ -404,12 +400,12 @@ LineComment: '//' ~ [\r\n]* -> skip;
 
 UNCLOSE_STRING: '"' StringCharacter*  EOF? {
 		y = str(self.text)
-		raise UncloseString(y[0:])
+		raise UncloseString(y[1:])
 	};
 
 ILLEGAL_ESCAPE: '"' StringCharacter* ('\\' ~[bfrnt"\\]) {
 		y = str(self.text)
-		raise IllegalEscape(y[0:])
+		raise IllegalEscape(y[1:])
 	};
 
 ERROR_CHAR: .{raise ErrorToken(self.text)};

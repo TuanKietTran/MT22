@@ -1,0 +1,1 @@
+n:integer=readInteger(); main: function void () {for(i=0,i<n,i+1) printInteger(i);}

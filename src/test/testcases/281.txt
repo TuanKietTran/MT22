@@ -1,0 +1,1 @@
+var_c:boolean=true||false;

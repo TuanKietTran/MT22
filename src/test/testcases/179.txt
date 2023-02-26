@@ -1,0 +1,1 @@
+main: function void () {sum:integer=0; n=readInteger(); for(i=0,i<n,i+1)  if(i%2==1) sum=sum+i; printInteger(sum);}

@@ -1,0 +1,1 @@
+main: function void () {printBoolean(var_a && var_b || var_c);}

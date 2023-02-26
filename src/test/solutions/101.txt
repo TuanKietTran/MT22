@@ -1,1 +1,1 @@
-x,abc,FEEL,free4all,<EOF>
+str,:,string,=,Unclosed String: Hello World!

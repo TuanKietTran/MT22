@@ -1,0 +1,1 @@
+print: function void(){printString("Empty function!");}

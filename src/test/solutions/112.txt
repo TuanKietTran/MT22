@@ -1,0 +1,1 @@
+main,:,function,void,(,),{,str,=,readString,(,),;,printString,(,str,),;,},<EOF>

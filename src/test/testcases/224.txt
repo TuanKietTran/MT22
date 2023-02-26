@@ -1,0 +1,1 @@
+main: function void () {printFloat(2e-7+3e-1);}

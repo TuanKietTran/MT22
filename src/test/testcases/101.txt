@@ -1,1 +1,1 @@
-x abc FEEL free4all 
+str:string="Hello World!

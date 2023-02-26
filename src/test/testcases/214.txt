@@ -1,0 +1,4 @@
+a:float;
+            abc:function void(){}
+            //end
+            b:integer;

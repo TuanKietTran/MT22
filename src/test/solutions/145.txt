@@ -1,0 +1,1 @@
+main,:,function,void,(,),{,n,:,integer,=,readInteger,(,),;,if,(,n,%,5,==,0,&&,n,%,10,!=,0,),printBoolean,(,true,),;,else,printBoolean,(,false,),;,},<EOF>

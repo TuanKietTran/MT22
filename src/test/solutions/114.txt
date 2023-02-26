@@ -1,0 +1,1 @@
+arr,:,array,[,10,],of,integer,;,<EOF>

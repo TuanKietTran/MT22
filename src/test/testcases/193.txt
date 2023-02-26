@@ -1,0 +1,7 @@
+lexer::header {
+    from lexererr import *
+    }
+
+    options{
+            language=Python3;
+    }

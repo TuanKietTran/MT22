@@ -1,0 +1,1 @@
+main: function void () {a:integer=readInteger(); b:integer=readInteger(); printInteger(a+b);}

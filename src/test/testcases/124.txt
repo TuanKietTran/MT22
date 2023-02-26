@@ -1,0 +1,1 @@
+main: function void () {a:integer=readInteger(); if(a!=0) printString("Non-zero"); else printString("Zero!!!");}

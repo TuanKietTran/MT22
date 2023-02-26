@@ -1,0 +1,1 @@
+get_sqrt: function float(n:integer) {return sqrt(n);}

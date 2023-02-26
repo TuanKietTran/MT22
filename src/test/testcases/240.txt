@@ -1,0 +1,1 @@
+arr:array[] of string={"string1","string2","string3"};
